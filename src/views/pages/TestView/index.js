@@ -12,7 +12,6 @@ import FilterIcon from '@material-ui/icons/FilterList';
 import Autocomplete, {
   createFilterOptions
 } from '@material-ui/lab/Autocomplete';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import { useSnackbar } from 'notistack';
 
 import { getMovies, addMovie } from 'src/actions/movieActions';
@@ -134,18 +133,6 @@ function TestView() {
                         {...params}
                         label="Film kiválasztása"
                         variant="outlined"
-                        //   InputProps={{
-                        //     endAdornment: (
-                        //       <InputAdornment position="end">
-                        //         <IconButton
-                        //           aria-label="a filmlista megnyitása"
-                        //           onClick={() => setOpenModal(true)}
-                        //         >
-                        //           <FilterIcon />
-                        //         </IconButton>
-                        //       </InputAdornment>
-                        //     )
-                        //   }}
                       />
                     )}
                   />
