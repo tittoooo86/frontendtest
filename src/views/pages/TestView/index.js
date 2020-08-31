@@ -12,6 +12,7 @@ import Autocomplete, {
 } from '@material-ui/lab/Autocomplete';
 
 import Page from 'src/components/Page';
+import ListModal from './ListModal/ListModal';
 import { getMovies } from 'src/actions/movieActions';
 
 const useStyles = makeStyles(theme => ({
@@ -35,73 +36,81 @@ function TestView() {
   const classes = useStyles();
   const [value, setValue] = useState(null);
   const [openModal, setOpenModal] = useState(false);
-  const [openList, setOpenList] = useState(false);
+  const [openList, setOpenList] = useState(true);
 
   useEffect(() => {
     dispatch(getMovies());
   }, [dispatch]);
 
   return (
-    <Page className={classes.root} title="Titus's test">
-      <Container maxWidth="lg">
-        <Box mt={3}>
-          <Paper elevation={3}>
-            <Box className={classes.wrapper}>
-              <Autocomplete
-                value={value}
-                onChange={(event, newValue) => {
-                  if (typeof newValue === 'string') {
-                    setValue({
-                      title: newValue
-                    });
-                  } else if (newValue && newValue.inputValue) {
-                    setValue({
-                      title: newValue.inputValue
-                    });
-                  } else {
-                    setValue(newValue);
-                  }
-                }}
-                filterOptions={(options, params) => {
-                  const filtered = filter(options, params);
+    <>
+      <Page className={classes.root} title="Titus's test">
+        <Container maxWidth="lg">
+          <Box mt={3}>
+            <Paper elevation={3}>
+              <Box className={classes.wrapper}>
+                <Autocomplete
+                  value={value}
+                  onChange={(event, newValue) => {
+                    if (typeof newValue === 'string') {
+                      setValue({
+                        title: newValue
+                      });
+                    } else if (newValue && newValue.inputValue) {
+                      setValue({
+                        title: newValue.inputValue
+                      });
+                    } else {
+                      setValue(newValue);
+                    }
+                  }}
+                  filterOptions={(options, params) => {
+                    const filtered = filter(options, params);
 
-                  if (params.inputValue !== '') {
-                    filtered.push({
-                      inputValue: params.inputValue,
-                      title: `Hozzáadás "${params.inputValue}"`
-                    });
-                  }
+                    if (params.inputValue !== '') {
+                      filtered.push({
+                        inputValue: params.inputValue,
+                        title: `Hozzáadás "${params.inputValue}"`
+                      });
+                    }
 
-                  return filtered;
-                }}
-                selectOnFocus
-                id="add-movie"
-                options={movies}
-                getOptionLabel={option => {
-                  if (typeof option === 'string') {
-                    return option;
-                  }
-                  if (option.inputValue) {
-                    return option.inputValue;
-                  }
-                  return option.name;
-                }}
-                renderOption={option => option.name}
-                style={{ width: 300 }}
-                freeSolo
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    label="Film kiválasztása"
-                    variant="outlined"
-                  />
-                )}
-              />
-            </Box>
-          </Paper>
-        </Box>
-      </Container>
-    </Page>
+                    return filtered;
+                  }}
+                  selectOnFocus
+                  id="add-movie"
+                  options={movies}
+                  getOptionLabel={option => {
+                    if (typeof option === 'string') {
+                      return option;
+                    }
+                    if (option.inputValue) {
+                      return option.inputValue;
+                    }
+                    return option.name;
+                  }}
+                  renderOption={option => option.name}
+                  style={{ width: 300 }}
+                  freeSolo
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Film kiválasztása"
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </Box>
+            </Paper>
+          </Box>
+        </Container>
+      </Page>
+      <ListModal
+        movies={movies}
+        open={openList}
+        onClose={() => setOpenList(false)}
+        onCreate={() => setOpenModal(true)}
+      />
+    </>
   );
 }
 
