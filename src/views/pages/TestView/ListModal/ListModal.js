@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { Box, Dialog, Paper, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -13,9 +12,10 @@ import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
+import AddIcon from '@material-ui/icons/Add';
 
 import ColorButton from '../ColorButton';
-import DialogTitle from './DialogTitle';
+import DialogTitle from '../DialogTitle';
 import EnhancedTableToolbar from './EnhancedTableToolbar';
 import EnhancedTableHead from './EnhancedTableHead';
 
@@ -138,7 +138,11 @@ function ListModal({ movies, onCreate, open, onClose, className, ...rest }) {
             }}
           />
 
-          <ColorButton onClick={onCreate} variant="contained">
+          <ColorButton
+            onClick={onCreate}
+            variant="contained"
+            startIcon={<AddIcon />}
+          >
             Új film létrehozása
           </ColorButton>
         </Box>

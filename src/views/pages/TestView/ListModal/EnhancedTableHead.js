@@ -5,21 +5,6 @@ import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
 import TableCell from '@material-ui/core/TableCell';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles(theme => ({
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    top: 20,
-    width: 1
-  }
-}));
 
 const headCells = [
   { id: 'name', numeric: false, disablePadding: true, label: 'Neve' },
@@ -28,8 +13,6 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const classes = useStyles();
-
   const {
     onSelectAllClick,
     order,

@@ -28,7 +28,7 @@ const DialogTitle = props => {
   return (
     <MuiDialogTitle
       disableTypography
-      className={[classes.root, classes.bottomBorder]}
+      className={`${classes.root} ${classes.bottomBorder}`}
       {...other}
     >
       <Typography variant="h6">{children}</Typography>

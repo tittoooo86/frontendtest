@@ -2,6 +2,8 @@ import axios from 'axios';
 
 export const GET_MOVIES = '@movie/get-movies';
 export const ADD_MOVIE = '@movie/add-movie';
+export const ADD_MOVIE_SUCCESS = '@movie/add-movie-success';
+export const ADD_MOVIE_FAILURE = '@movie/add-movie-failure';
 
 export function getMovies() {
   const request = axios.get(
@@ -25,13 +27,26 @@ export function addMovie(movie) {
   );
 
   return dispatch => {
-    request.then(response =>
-      dispatch({
-        type: ADD_MOVIE,
-        payload: {
-          ...response.data
-        }
+    dispatch({
+      type: ADD_MOVIE
+    });
+
+    request
+      .then(response => {
+        return dispatch({
+          type: ADD_MOVIE_SUCCESS,
+          payload: {
+            ...response.data
+          }
+        });
       })
-    );
+      .catch(err => {
+        return dispatch({
+          type: ADD_MOVIE_FAILURE,
+          payload: {
+            err
+          }
+        });
+      });
   };
 }
