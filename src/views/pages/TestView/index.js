@@ -160,6 +160,7 @@ function TestView() {
           dispatch(addMovie(movie));
           setValue(movie);
           setOpenModal(false);
+          setOpenList(false);
         }}
         openList={() => setOpenList(true)}
       />
