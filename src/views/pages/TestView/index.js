@@ -51,7 +51,7 @@ function TestView() {
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const [value, setValue] = useState(null);
-  const [openModal, setOpenModal] = useState(true);
+  const [openModal, setOpenModal] = useState(false);
   const [openList, setOpenList] = useState(false);
 
   useEffect(() => {
@@ -160,6 +160,10 @@ function TestView() {
         open={openList}
         onClose={() => setOpenList(false)}
         onCreate={() => setOpenModal(true)}
+        onSelect={movie => {
+          setValue(movie);
+          setOpenList(false);
+        }}
       />
       <AddModal
         initialValue={value}
@@ -170,6 +174,7 @@ function TestView() {
           setValue(movie);
           setOpenModal(false);
         }}
+        openList={() => setOpenList(true)}
       />
     </>
   );

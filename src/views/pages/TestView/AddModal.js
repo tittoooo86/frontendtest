@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { Box, Dialog, Grid, TextField, makeStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
+import { v4 as uuidv4 } from 'uuid';
 
 import DialogTitle from './DialogTitle';
 import ColorButton from './ColorButton';
@@ -19,7 +20,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function AddModal({ initialValue, onAdd, open, onClose, className, ...rest }) {
+function AddModal({
+  initialValue,
+  onAdd,
+  open,
+  onClose,
+  openList,
+  className,
+  ...rest
+}) {
   const [value, setValue] = useState();
   const classes = useStyles();
 
@@ -36,13 +45,14 @@ function AddModal({ initialValue, onAdd, open, onClose, className, ...rest }) {
 
   const addMovie = () => {
     const movie = {
-      id: '1',
+      id: uuidv4(),
       createdAt: new Date(),
       name: value,
       year: 98734
     };
 
     onAdd(movie);
+    setValue();
   };
 
   return (
@@ -71,7 +81,9 @@ function AddModal({ initialValue, onAdd, open, onClose, className, ...rest }) {
             alignItems="center"
           >
             <ColorButton
-              onClick={addMovie}
+              onClick={() => {
+                addMovie();
+              }}
               variant="contained"
               color="primary"
               startIcon={<AddIcon />}
@@ -81,7 +93,10 @@ function AddModal({ initialValue, onAdd, open, onClose, className, ...rest }) {
             </ColorButton>
 
             <ColorButton
-              onClick={addMovie}
+              onClick={() => {
+                addMovie();
+                openList();
+              }}
               variant="contained"
               color="primary"
               startIcon={<AddIcon />}
@@ -101,12 +116,14 @@ AddModal.propTypes = {
   className: PropTypes.string,
   onAdd: PropTypes.func,
   onClose: PropTypes.func,
+  openList: PropTypes.func,
   open: PropTypes.bool.isRequired
 };
 
 AddModal.defaultProps = {
   onAdd: () => {},
-  onClose: () => {}
+  onClose: () => {},
+  openList: () => {}
 };
 
 export default AddModal;

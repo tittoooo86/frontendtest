@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { Box, Dialog, Paper, TextField } from '@material-ui/core';
@@ -9,14 +9,13 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import Checkbox from '@material-ui/core/Checkbox';
+import Radio from '@material-ui/core/Radio';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
 
 import ColorButton from '../ColorButton';
 import DialogTitle from '../DialogTitle';
-import EnhancedTableToolbar from './EnhancedTableToolbar';
 import EnhancedTableHead from './EnhancedTableHead';
 
 const useStyles = makeStyles(theme => ({
@@ -54,14 +53,26 @@ function stableSort(array, comparator) {
   return stabilizedThis.map(el => el[0]);
 }
 
-function ListModal({ movies, onCreate, open, onClose, className, ...rest }) {
+function ListModal({
+  movies,
+  onCreate,
+  onSelect,
+  open,
+  onClose,
+  className,
+  ...rest
+}) {
   const classes = useStyles();
   const [value, setValue] = useState('');
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('name');
-  const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [filtered, setFiltered] = useState([]);
+
+  useEffect(() => {
+    setFiltered(movies);
+  }, [movies]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -69,33 +80,10 @@ function ListModal({ movies, onCreate, open, onClose, className, ...rest }) {
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = event => {
-    if (event.target.checked) {
-      const newSelecteds = movies.map(n => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
   const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-
-    setSelected(newSelected);
+    const movie = filtered.filter(movie => movie.name === name);
+    onClose();
+    onSelect(movie[0]);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -110,17 +98,25 @@ function ListModal({ movies, onCreate, open, onClose, className, ...rest }) {
   const handleChange = event => {
     event.persist();
     setValue(event.target.value);
+
+    const items = movies.filter(m =>
+      m.name.toLowerCase().includes(event.target.value.toLowerCase())
+    );
+
+    setFiltered(items);
+
+    if (event.target.value === '') {
+      setFiltered(movies);
+    }
   };
 
-  const isSelected = name => selected.indexOf(name) !== -1;
-
   const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, movies.length - page * rowsPerPage);
+    rowsPerPage - Math.min(rowsPerPage, filtered.length - page * rowsPerPage);
 
   return (
     <Dialog maxWidth="lg" fullWidth onClose={onClose} open={open}>
       <DialogTitle id="customized-dialog-title" onClose={onClose}>
-        Modal title
+        Film kiválasztása
       </DialogTitle>
       <div className={clsx(classes.root, className)} {...rest}>
         <Box mt={3} display="flex" justifyContent="space-between">
@@ -148,39 +144,29 @@ function ListModal({ movies, onCreate, open, onClose, className, ...rest }) {
         </Box>
 
         <Box mt={3}>
-          <EnhancedTableToolbar numSelected={selected.length} />
           <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="simple table">
               <EnhancedTableHead
                 classes={classes}
-                numSelected={selected.length}
                 order={order}
                 orderBy={orderBy}
-                onSelectAllClick={handleSelectAllClick}
                 onRequestSort={handleRequestSort}
-                rowCount={movies.length}
               />
               <TableBody>
-                {stableSort(movies, getComparator(order, orderBy))
+                {stableSort(filtered, getComparator(order, orderBy))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
-                    const isItemSelected = isSelected(row.name);
                     const labelId = `enhanced-table-checkbox-${index}`;
                     return (
                       <TableRow
                         key={row.id}
                         onClick={event => handleClick(event, row.name)}
-                        role="checkbox"
-                        aria-checked={isItemSelected}
+                        role="radio"
                         tabIndex={-1}
-                        selected={isItemSelected}
                         hover
                       >
                         <TableCell padding="checkbox">
-                          <Checkbox
-                            checked={isItemSelected}
-                            inputProps={{ 'aria-labelledby': labelId }}
-                          />
+                          <Radio inputProps={{ 'aria-labelledby': labelId }} />
                         </TableCell>
                         <TableCell component="th" scope="row">
                           {row.name}
@@ -201,7 +187,7 @@ function ListModal({ movies, onCreate, open, onClose, className, ...rest }) {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={movies.length}
+            count={filtered.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onChangePage={handleChangePage}
@@ -214,15 +200,18 @@ function ListModal({ movies, onCreate, open, onClose, className, ...rest }) {
 }
 
 ListModal.propTypes = {
+  movies: PropTypes.array,
   className: PropTypes.string,
   onCreate: PropTypes.func,
   onClose: PropTypes.func,
+  onSelect: PropTypes.func,
   open: PropTypes.bool.isRequired
 };
 
 ListModal.defaultProps = {
   onClose: () => {},
-  onCreate: () => {}
+  onCreate: () => {},
+  onSelect: () => {}
 };
 
 export default ListModal;
