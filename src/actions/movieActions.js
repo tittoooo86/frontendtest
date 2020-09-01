@@ -6,9 +6,7 @@ export const ADD_MOVIE_SUCCESS = '@movie/add-movie-success';
 export const ADD_MOVIE_FAILURE = '@movie/add-movie-failure';
 
 export function getMovies() {
-  const request = axios.get(
-    'https://5f48ccf78e271c001650c261.mockapi.io/filmek'
-  );
+  const request = axios.get(process.env.REACT_APP_API_URL);
 
   return dispatch => {
     request.then(response => {
@@ -21,10 +19,7 @@ export function getMovies() {
 }
 
 export function addMovie(movie) {
-  const request = axios.post(
-    'https://5f48ccf78e271c001650c261.mockapi.io/filmek',
-    movie
-  );
+  const request = axios.post(process.env.REACT_APP_API_URL, movie);
 
   return dispatch => {
     dispatch({
@@ -43,9 +38,7 @@ export function addMovie(movie) {
       .catch(err => {
         return dispatch({
           type: ADD_MOVIE_FAILURE,
-          payload: {
-            err
-          }
+          payload: err.response.statusText
         });
       });
   };

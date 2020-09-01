@@ -3,13 +3,15 @@ import produce from 'immer';
 import {
   GET_MOVIES,
   ADD_MOVIE,
-  ADD_MOVIE_SUCCESS
+  ADD_MOVIE_SUCCESS,
+  ADD_MOVIE_FAILURE
 } from 'src/actions/movieActions';
 
 const initialState = {
   movies: [],
   loading: false,
-  success: false
+  success: null,
+  error: null
 };
 
 const movieReducer = (state = initialState, action) => {
@@ -25,7 +27,8 @@ const movieReducer = (state = initialState, action) => {
     case ADD_MOVIE: {
       return produce(state, draft => {
         draft.loading = true;
-        draft.success = false;
+        draft.success = null;
+        draft.error = null;
       });
     }
 
@@ -36,6 +39,15 @@ const movieReducer = (state = initialState, action) => {
         draft.movies = [...state.movies, movie];
         draft.loading = false;
         draft.success = true;
+      });
+    }
+
+    case ADD_MOVIE_FAILURE: {
+      return produce(state, draft => {
+        draft.movies = [...state.movies];
+        draft.loading = false;
+        draft.success = false;
+        draft.error = action.payload;
       });
     }
 

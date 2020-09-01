@@ -46,7 +46,7 @@ const filter = createFilterOptions();
 
 function TestView() {
   const dispatch = useDispatch();
-  const { movies, success } = useSelector(state => state.movies);
+  const { movies, success, error } = useSelector(state => state.movies);
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const [value, setValue] = useState(null);
@@ -57,16 +57,17 @@ function TestView() {
     dispatch(getMovies());
   }, [dispatch]);
 
-  const movieAdded = () => {
-    enqueueSnackbar('Film hozzáadva', {
-      variant: 'success'
+  const showToast = () => {
+    enqueueSnackbar(error || 'Film hozzáadva', {
+      variant: error ? 'error' : 'success'
     });
   };
 
   useEffect(() => {
-    if (success) {
-      movieAdded();
+    if (success !== null) {
+      showToast();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [success]);
 
   return (
